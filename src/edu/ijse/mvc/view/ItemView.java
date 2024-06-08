@@ -17,7 +17,7 @@ import javax.swing.table.DefaultTableModel;
  * @author anjan
  */
 public class ItemView extends javax.swing.JFrame {
-    
+
     private ItemController itemController;
 
     /**
@@ -112,6 +112,11 @@ public class ItemView extends javax.swing.JFrame {
                 "Title 1", "Title 2", "Title 3", "Title 4"
             }
         ));
+        tblItem.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                tblItemMouseClicked(evt);
+            }
+        });
         jScrollPane1.setViewportView(tblItem);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -206,6 +211,10 @@ public class ItemView extends javax.swing.JFrame {
         saveItem();
     }//GEN-LAST:event_btnSaveActionPerformed
 
+    private void tblItemMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tblItemMouseClicked
+        searchItem();
+    }//GEN-LAST:event_tblItemMouseClicked
+
     /**
      * @param args the command line arguments
      */
@@ -259,19 +268,20 @@ public class ItemView extends javax.swing.JFrame {
     private javax.swing.JTextField txtQoh;
     private javax.swing.JTextField txtUnitPrice;
     // End of variables declaration//GEN-END:variables
-    private void saveItem(){
+    private void saveItem() {
         try {
-        ItemDto dto = new ItemDto(txtCode.getText(), txtDesc.getText(), txtPack.getText(), Double.parseDouble(txtUnitPrice.getText()), Integer.parseInt(txtQoh.getText()));
-        String resp= itemController.saveItem(dto);
+            ItemDto dto = new ItemDto(txtCode.getText(), txtDesc.getText(), txtPack.getText(), Double.parseDouble(txtUnitPrice.getText()), Integer.parseInt(txtQoh.getText()));
+            String resp = itemController.saveItem(dto);
             JOptionPane.showMessageDialog(this, resp);
             clearForm();
+            loadTable();
         } catch (Exception ex) {
             JOptionPane.showMessageDialog(this, "Error at save data");
         }
-       
+
     }
-    
-    private void clearForm(){
+
+    private void clearForm() {
         txtCode.setText("");
         txtDesc.setText("");
         txtPack.setText("");
@@ -281,22 +291,42 @@ public class ItemView extends javax.swing.JFrame {
 
     private void loadTable() {
         try {
-            String columns[]  ={"Item Id", "Item Description", "Pack Size", "Unit Price", "QoH"};
-            DefaultTableModel dtm = new DefaultTableModel(columns, 0){
+            String columns[] = {"Item Id", "Item Description", "Pack Size", "Unit Price", "QoH"};
+            DefaultTableModel dtm = new DefaultTableModel(columns, 0) {
                 @Override
-                public boolean isCellEditable(int row, int column){
+                public boolean isCellEditable(int row, int column) {
                     return false;
                 }
             };
             tblItem.setModel(dtm);
-            
+
             ArrayList<ItemDto> itemDtos = itemController.getAllItem();
-            for(ItemDto dto : itemDtos){
-                Object[] rowDate = {dto.getCode(), dto.getDescription(), dto.getPackSize(), dto.getUnitPrice(), dto.getQoh()};
-                dtm.addRow(rowDate);
+            for (ItemDto dto : itemDtos) {
+                Object[] rowData = {dto.getCode(), dto.getDescription(), dto.getPackSize(), dto.getUnitPrice(), dto.getQoh()};
+                dtm.addRow(rowData);
             }
         } catch (Exception e) {
             JOptionPane.showMessageDialog(this, "Error at Loading Data to Item Table");
+        }
+    }
+
+    private void searchItem() {
+        try {
+            String itemId = tblItem.getValueAt(tblItem.getSelectedRow(), 0).toString();
+            ItemDto dto = itemController.searchItem(itemId);
+
+            if (dto != null) {
+                txtCode.setText(dto.getCode());
+                txtDesc.setText(dto.getDescription());
+                txtPack.setText(dto.getPackSize());
+                txtUnitPrice.setText(Double.toString(dto.getUnitPrice()));
+                txtQoh.setText(Integer.toString(dto.getQoh()));
+            } else {
+                JOptionPane.showMessageDialog(this, "Item Not Found");
+            }
+
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, "Error at loading Item");
         }
     }
 }
