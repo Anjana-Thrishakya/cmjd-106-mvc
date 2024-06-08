@@ -24,7 +24,7 @@ public class ItemModel {
     }
     
     public String saveItem(ItemDto itemDto) throws Exception{
-        String sql = "INSERT INTO item VALUES(?,?,?,?,?)";
+            String sql = "INSERT INTO item VALUES(?,?,?,?,?)";
         
         PreparedStatement statement = connection.prepareStatement(sql);
         statement.setString(1, itemDto.getCode());
@@ -63,5 +63,14 @@ public class ItemModel {
             return dto;
         }
         return null;
+    }
+
+    public String deleteItem(String itemCode) throws Exception{
+        String sql = "DELETE FROM item WHERE ItemCode = ?";
+        PreparedStatement statement = connection.prepareStatement(sql);
+        statement.setString(1, itemCode);
+        
+        return statement.executeUpdate() >0 ? "Success" : "Fail";
+        
     }
 }

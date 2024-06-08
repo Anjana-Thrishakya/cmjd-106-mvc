@@ -100,6 +100,11 @@ public class ItemView extends javax.swing.JFrame {
 
         btnDelete.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
         btnDelete.setText("Delete");
+        btnDelete.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnDeleteActionPerformed(evt);
+            }
+        });
 
         tblItem.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
@@ -215,6 +220,10 @@ public class ItemView extends javax.swing.JFrame {
         searchItem();
     }//GEN-LAST:event_tblItemMouseClicked
 
+    private void btnDeleteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDeleteActionPerformed
+        deleteItem();
+    }//GEN-LAST:event_btnDeleteActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -327,6 +336,18 @@ public class ItemView extends javax.swing.JFrame {
 
         } catch (Exception e) {
             JOptionPane.showMessageDialog(this, "Error at loading Item");
+        }
+    }
+    
+    private void deleteItem(){
+        try {
+            String itemCode = txtCode.getText();
+            String resp = itemController.deleteItem(itemCode);
+            JOptionPane.showMessageDialog(this, resp);
+            clearForm();
+            loadTable();
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, "Error at Delete Item");
         }
     }
 }
