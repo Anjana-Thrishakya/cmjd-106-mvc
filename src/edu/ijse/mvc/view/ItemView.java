@@ -8,6 +8,7 @@ import edu.ijse.mvc.controller.ItemController;
 import edu.ijse.mvc.dto.ItemDto;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.JOptionPane;
 
 /**
  *
@@ -226,16 +227,24 @@ public class ItemView extends javax.swing.JFrame {
     private javax.swing.JTextField txtQoh;
     private javax.swing.JTextField txtUnitPrice;
     // End of variables declaration//GEN-END:variables
-
     private void saveItem(){
         ItemDto dto = new ItemDto(txtCode.getText(), txtDesc.getText(), txtPack.getText(), Double.parseDouble(txtUnitPrice.getText()), Integer.parseInt(txtQoh.getText()));
         String resp;
         try {
             resp = itemController.saveItem(dto);
-            System.out.println(resp);
+            JOptionPane.showMessageDialog(this, resp);
+            clearForm();
         } catch (Exception ex) {
-            Logger.getLogger(ItemView.class.getName()).log(Level.SEVERE, null, ex);
+            JOptionPane.showMessageDialog(this, "Error at save data");
         }
        
+    }
+    
+    private void clearForm(){
+        txtCode.setText("");
+        txtDesc.setText("");
+        txtPack.setText("");
+        txtQoh.setText("");
+        txtUnitPrice.setText("");
     }
 }
