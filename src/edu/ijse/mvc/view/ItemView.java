@@ -97,6 +97,11 @@ public class ItemView extends javax.swing.JFrame {
 
         btnUpdate.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
         btnUpdate.setText("Update");
+        btnUpdate.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnUpdateActionPerformed(evt);
+            }
+        });
 
         btnDelete.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
         btnDelete.setText("Delete");
@@ -224,6 +229,10 @@ public class ItemView extends javax.swing.JFrame {
         deleteItem();
     }//GEN-LAST:event_btnDeleteActionPerformed
 
+    private void btnUpdateActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnUpdateActionPerformed
+       updateItem();
+    }//GEN-LAST:event_btnUpdateActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -348,6 +357,19 @@ public class ItemView extends javax.swing.JFrame {
             loadTable();
         } catch (Exception e) {
             JOptionPane.showMessageDialog(this, "Error at Delete Item");
+        }
+    }
+
+    private void updateItem() {
+        try {
+            ItemDto itemDto = new ItemDto(txtCode.getText() ,txtDesc.getText(), txtPack.getText(), Double.parseDouble(txtUnitPrice.getText()), Integer.parseInt(txtQoh.getText()));
+            String resp = itemController.updateItem(itemDto);
+            JOptionPane.showMessageDialog(this, resp);
+            loadTable();
+            clearForm();
+            
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, "Error at update Item");
         }
     }
 }

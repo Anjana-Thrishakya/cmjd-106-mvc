@@ -24,7 +24,7 @@ public class ItemModel {
     }
     
     public String saveItem(ItemDto itemDto) throws Exception{
-            String sql = "INSERT INTO item VALUES(?,?,?,?,?)";
+        String sql = "INSERT INTO item VALUES(?,?,?,?,?)";
         
         PreparedStatement statement = connection.prepareStatement(sql);
         statement.setString(1, itemDto.getCode());
@@ -72,5 +72,19 @@ public class ItemModel {
         
         return statement.executeUpdate() >0 ? "Success" : "Fail";
         
+    }
+
+    public String updateItem(ItemDto itemDto) throws Exception{
+        String sql = "UPDATE ITEM SET Description = ?, PackSize = ?, UnitPrice = ?, QtyOnHand = ? WHERE ItemCode = ?";
+        
+        PreparedStatement statement = connection.prepareStatement(sql);
+        
+        statement.setString(1, itemDto.getDescription());
+        statement.setString(2, itemDto.getPackSize());
+        statement.setDouble(3, itemDto.getUnitPrice());
+        statement.setInt(4, itemDto.getQoh());
+        statement.setString(5, itemDto.getCode());
+        
+        return statement.executeUpdate() >0 ? "Success" : "Fail";
     }
 }
