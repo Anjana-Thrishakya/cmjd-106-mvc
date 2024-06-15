@@ -8,7 +8,10 @@ import edu.ijse.mvc.controller.CustomerController;
 import edu.ijse.mvc.controller.ItemController;
 import edu.ijse.mvc.dto.CustomerDto;
 import edu.ijse.mvc.dto.ItemDto;
+import edu.ijse.mvc.dto.OrderDetailDto;
+import java.util.ArrayList;
 import javax.swing.JOptionPane;
+import javax.swing.table.DefaultTableModel;
 
 /**
  *
@@ -21,11 +24,14 @@ public class OrderView extends javax.swing.JFrame {
      */
     private ItemController itemController;
     private CustomerController customerController;
-    
+    private ArrayList<OrderDetailDto> orderDetailDtos;
+
     public OrderView() throws Exception {
         itemController = new ItemController();
         customerController = new CustomerController();
+        orderDetailDtos = new ArrayList<>();
         initComponents();
+        loadTable();
     }
 
     /**
@@ -55,7 +61,7 @@ public class OrderView extends javax.swing.JFrame {
         lblQty = new javax.swing.JLabel();
         btnSearchItem = new javax.swing.JButton();
         jScrollPane1 = new javax.swing.JScrollPane();
-        jTable1 = new javax.swing.JTable();
+        tblOrderDetail = new javax.swing.JTable();
         btnPlaceOrder = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
@@ -89,6 +95,11 @@ public class OrderView extends javax.swing.JFrame {
 
         btnAddToTable.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
         btnAddToTable.setText("Add");
+        btnAddToTable.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnAddToTableActionPerformed(evt);
+            }
+        });
 
         lblDiscount.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
         lblDiscount.setText("Discount");
@@ -108,7 +119,7 @@ public class OrderView extends javax.swing.JFrame {
             }
         });
 
-        jTable1.setModel(new javax.swing.table.DefaultTableModel(
+        tblOrderDetail.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
                 {null, null, null, null},
                 {null, null, null, null},
@@ -119,7 +130,7 @@ public class OrderView extends javax.swing.JFrame {
                 "Title 1", "Title 2", "Title 3", "Title 4"
             }
         ));
-        jScrollPane1.setViewportView(jTable1);
+        jScrollPane1.setViewportView(tblOrderDetail);
 
         btnPlaceOrder.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
         btnPlaceOrder.setText("Place Order");
@@ -223,6 +234,10 @@ public class OrderView extends javax.swing.JFrame {
         seacrhCustomer();
     }//GEN-LAST:event_btnSearchCustomerActionPerformed
 
+    private void btnAddToTableActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAddToTableActionPerformed
+        addToTable();
+    }//GEN-LAST:event_btnAddToTableActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -265,7 +280,6 @@ public class OrderView extends javax.swing.JFrame {
     private javax.swing.JButton btnSearchItem;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JSeparator jSeparator1;
-    private javax.swing.JTable jTable1;
     private javax.swing.JLabel lblCustDetail;
     private javax.swing.JLabel lblCustId;
     private javax.swing.JLabel lblDiscount;
@@ -274,18 +288,19 @@ public class OrderView extends javax.swing.JFrame {
     private javax.swing.JLabel lblOrderId;
     private javax.swing.JLabel lblQty;
     private javax.swing.JLabel lblTitle;
+    private javax.swing.JTable tblOrderDetail;
     private javax.swing.JTextField txtCustId;
     private javax.swing.JTextField txtDiscount;
     private javax.swing.JTextField txtItemId;
     private javax.swing.JTextField txtOrderId;
     private javax.swing.JTextField txtQty;
     // End of variables declaration//GEN-END:variables
-    private void searchItem(){
+    private void searchItem() {
         try {
             String itemId = txtItemId.getText();
             ItemDto itemDto = itemController.searchItem(itemId);
-            if(itemDto != null){
-                lblItemData.setText(itemDto.getCode() + " | " + itemDto.getDescription() + " : " + itemDto.getQoh() + " : " + itemDto.getUnitPrice() );
+            if (itemDto != null) {
+                lblItemData.setText(itemDto.getCode() + " | " + itemDto.getDescription() + " : " + itemDto.getQoh() + " : " + itemDto.getUnitPrice());
             } else {
                 lblItemData.setText("Item not found");
             }
@@ -294,13 +309,13 @@ public class OrderView extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(this, "Error at Search Item");
         }
     }
-    
-    private void seacrhCustomer(){
+
+    private void seacrhCustomer() {
         try {
             String custId = txtCustId.getText();
             CustomerDto customerDto = customerController.searchCustomer(custId);
-            if(customerDto  != null){
-                lblCustDetail.setText(customerDto.getCustId() + " | " + customerDto.getName() );
+            if (customerDto != null) {
+                lblCustDetail.setText(customerDto.getCustId() + " | " + customerDto.getName());
             } else {
                 lblItemData.setText("Customer not found");
             }
@@ -308,5 +323,36 @@ public class OrderView extends javax.swing.JFrame {
             e.printStackTrace();
             JOptionPane.showMessageDialog(this, "Error at Search Customer");
         }
+    }
+
+    private void loadTable() {
+        String columns[] = {"Item Code", "Qty", "Discount"};
+        DefaultTableModel dtm = new DefaultTableModel(columns, 0) {
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return false;
+            }
+        };
+        tblOrderDetail.setModel(dtm);
+    }
+
+    private void addToTable() {
+        OrderDetailDto orderDetailDto = new OrderDetailDto(null, txtItemId.getText(),
+                Integer.parseInt(txtQty.getText()),
+                Integer.parseInt(txtDiscount.getText()));
+        orderDetailDtos.add(orderDetailDto);
+        
+        Object[] rowData = {orderDetailDto.getItemCode(), orderDetailDto.getQty(), orderDetailDto.getDiscount()}; 
+        DefaultTableModel dtm = (DefaultTableModel) tblOrderDetail.getModel();
+        dtm.addRow(rowData);
+        cleanItem();
+    }
+    
+    private void cleanItem(){
+        txtItemId.setText("");
+        txtDiscount.setText("");
+        txtQty.setText("");
+        lblItemData.setText("");
+        
     }
 }
