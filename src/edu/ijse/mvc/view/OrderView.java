@@ -4,7 +4,9 @@
  */
 package edu.ijse.mvc.view;
 
+import edu.ijse.mvc.controller.CustomerController;
 import edu.ijse.mvc.controller.ItemController;
+import edu.ijse.mvc.dto.CustomerDto;
 import edu.ijse.mvc.dto.ItemDto;
 import javax.swing.JOptionPane;
 
@@ -18,9 +20,11 @@ public class OrderView extends javax.swing.JFrame {
      * Creates new form OrderView
      */
     private ItemController itemController;
+    private CustomerController customerController;
     
     public OrderView() throws Exception {
         itemController = new ItemController();
+        customerController = new CustomerController();
         initComponents();
     }
 
@@ -72,6 +76,11 @@ public class OrderView extends javax.swing.JFrame {
 
         btnSearchCustomer.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
         btnSearchCustomer.setText("Search");
+        btnSearchCustomer.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnSearchCustomerActionPerformed(evt);
+            }
+        });
 
         lblItemId.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
         lblItemId.setText("Item Id");
@@ -210,6 +219,10 @@ public class OrderView extends javax.swing.JFrame {
         searchItem();
     }//GEN-LAST:event_btnSearchItemActionPerformed
 
+    private void btnSearchCustomerActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSearchCustomerActionPerformed
+        seacrhCustomer();
+    }//GEN-LAST:event_btnSearchCustomerActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -279,6 +292,21 @@ public class OrderView extends javax.swing.JFrame {
         } catch (Exception e) {
             e.printStackTrace();
             JOptionPane.showMessageDialog(this, "Error at Search Item");
+        }
+    }
+    
+    private void seacrhCustomer(){
+        try {
+            String custId = txtCustId.getText();
+            CustomerDto customerDto = customerController.searchCustomer(custId);
+            if(customerDto  != null){
+                lblCustDetail.setText(customerDto.getCustId() + " | " + customerDto.getName() );
+            } else {
+                lblItemData.setText("Customer not found");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(this, "Error at Search Customer");
         }
     }
 }
