@@ -6,10 +6,14 @@ package edu.ijse.mvc.view;
 
 import edu.ijse.mvc.controller.CustomerController;
 import edu.ijse.mvc.controller.ItemController;
+import edu.ijse.mvc.controller.OrderController;
 import edu.ijse.mvc.dto.CustomerDto;
 import edu.ijse.mvc.dto.ItemDto;
 import edu.ijse.mvc.dto.OrderDetailDto;
+import edu.ijse.mvc.dto.OrderDto;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 
@@ -25,10 +29,12 @@ public class OrderView extends javax.swing.JFrame {
     private ItemController itemController;
     private CustomerController customerController;
     private ArrayList<OrderDetailDto> orderDetailDtos;
+    private OrderController orderController;
 
     public OrderView() throws Exception {
         itemController = new ItemController();
         customerController = new CustomerController();
+        orderController = new OrderController();
         orderDetailDtos = new ArrayList<>();
         initComponents();
         loadTable();
@@ -134,6 +140,11 @@ public class OrderView extends javax.swing.JFrame {
 
         btnPlaceOrder.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
         btnPlaceOrder.setText("Place Order");
+        btnPlaceOrder.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnPlaceOrderActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -237,6 +248,10 @@ public class OrderView extends javax.swing.JFrame {
     private void btnAddToTableActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAddToTableActionPerformed
         addToTable();
     }//GEN-LAST:event_btnAddToTableActionPerformed
+
+    private void btnPlaceOrderActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnPlaceOrderActionPerformed
+        placeOrder();
+    }//GEN-LAST:event_btnPlaceOrderActionPerformed
 
     /**
      * @param args the command line arguments
@@ -354,5 +369,24 @@ public class OrderView extends javax.swing.JFrame {
         txtQty.setText("");
         lblItemData.setText("");
         
+    }
+    
+    private void placeOrder(){
+        try {
+            OrderDto orderDto = new OrderDto();
+            orderDto.setOrderId(txtOrderId.getText());
+            orderDto.setCustId(txtCustId.getText());
+            
+            // 2014-06-15 -> yyyy-MM-dd
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+            String date = sdf.format(new Date());
+            orderDto.setDate(date);
+            
+            String resp = orderController.placeOrder(orderDto, orderDetailDtos);
+            JOptionPane.showMessageDialog(this, resp);
+        } catch(Exception e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(this, "Error at Order Save");
+        }
     }
 }
